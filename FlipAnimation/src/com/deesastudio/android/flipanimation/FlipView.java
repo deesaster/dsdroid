@@ -16,45 +16,62 @@ public class FlipView extends FrameLayout{
   public static final int DIRECTION_VERTICAL = 2;
   
   private boolean m_IsFrontFacing = true;
-  
-  //for ignoring click listener when animating
   private boolean m_IsAnimating = false;
   
-  //
   private int m_InterpolatorType = INTERPOLATOR_LINEAR;
-  
-  //
   private int m_Direction = DIRECTION_HORIZONTAL;
   
-  //time it takes to flip each face
   private long m_HalfAnimationDuration = 500;
   
   private RelativeLayout m_FrontFace;
   private RelativeLayout m_BackFace;
   
-  private OnClickListener m_ClickHandler = new View.OnClickListener() {	
-    public void onClick(View v) {
-      flip();
-    }
-  };
-  
-  public FlipView(Context context) {
+  public FlipView(Context context, RelativeLayout frontFace, RelativeLayout backFace) {
     super(context);
     
-    //inflate views
-    m_FrontFace = (RelativeLayout) View.inflate(context, R.layout.front_face, null);
-    m_BackFace = (RelativeLayout) View.inflate(context, R.layout.back_face, null);
-    this.addView(m_FrontFace);
-    this.addView(m_BackFace);
-    
-    m_BackFace.setVisibility(View.GONE);
-    //setup listeners
-    m_FrontFace.setOnClickListener(m_ClickHandler);
-    m_BackFace.setOnClickListener(m_ClickHandler);
+    setFrontFace (frontFace);
+    setBackFace (backFace);
+    //m_BackFace.setVisibility(View.GONE);
   }
-  	
+  
+  //
+  public void setFrontFace (RelativeLayout frontFace) {
+    if (m_IsAnimating)
+        return;
+    
+    if (m_FrontFace != null)
+      this.removeView(m_FrontFace);
+    
+    m_FrontFace = frontFace;
+    
+    if (m_FrontFace != null) {
+      this.addView(m_FrontFace);
+      
+      if (!m_IsFrontFacing)
+        m_FrontFace.setVisibility(View.GONE);
+    }
+  }
+  
+  //
+  public void setBackFace (RelativeLayout backFace) {
+    if (m_IsAnimating)
+      return;
+    
+    if (m_BackFace != null)
+      this.removeView(m_BackFace);
+    
+    m_BackFace = backFace;
+    
+    if (m_BackFace != null) {
+      this.addView(m_BackFace);
+      
+      if (m_IsFrontFacing)
+        m_FrontFace.setVisibility(View.GONE);
+    }
+  }
+  
   public void setInterpolator(int interpolator) {
-    if (interpolator==INTERPOLATOR_NONLINEAR)
+    if (interpolator == INTERPOLATOR_NONLINEAR)
       m_InterpolatorType = INTERPOLATOR_NONLINEAR;
     else
       m_InterpolatorType = INTERPOLATOR_LINEAR;
@@ -62,7 +79,7 @@ public class FlipView extends FrameLayout{
   
   public void setAnimationDuration(long milliseconds) {
     if (milliseconds > 20)
-      m_HalfAnimationDuration = (long)milliseconds/2;
+      m_HalfAnimationDuration = (long)milliseconds / 2;
   }
   
   public void setDirection(int dir) {
@@ -76,7 +93,7 @@ public class FlipView extends FrameLayout{
   }
 	
   public void flip() {
-    if (m_IsAnimating)
+    if (m_IsAnimating || m_FrontFace == null || m_BackFace == null)
       return;
     
     if (m_IsFrontFacing)
@@ -119,14 +136,15 @@ public class FlipView extends FrameLayout{
       m_FrontFace.setVisibility(View.GONE);
       m_BackFace.setVisibility(View.VISIBLE);
       m_BackFace.requestFocus();
-      rotation = new FlipAnimation(-90, 0, centerX, centerY, ((m_Direction==DIRECTION_VERTICAL)?false:true));
+      rotation = new FlipAnimation(-90, 0, centerX, centerY, 
+                                    ((m_Direction==DIRECTION_VERTICAL) ? false : true));
     }
     else {
       m_BackFace.setVisibility(View.GONE);
       m_FrontFace.setVisibility(View.VISIBLE);
       m_FrontFace.requestFocus();
-      
-      rotation = new FlipAnimation(90, 0, centerX, centerY,((m_Direction==DIRECTION_VERTICAL)?false:true));
+      rotation = new FlipAnimation(90, 0, centerX, centerY,
+                                    ((m_Direction==DIRECTION_VERTICAL) ? false : true));
     }
     
     rotation.setDuration(m_HalfAnimationDuration);
