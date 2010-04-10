@@ -66,8 +66,11 @@ public class FlipView extends FrameLayout{
   }
   
   public void setDirection(int dir) {
+    if (m_IsAnimating)
+      return;
+    
     if (dir==DIRECTION_VERTICAL) 
-      m_Direction = dir;
+      m_Direction = DIRECTION_VERTICAL;
     else
       m_Direction = DIRECTION_HORIZONTAL;
   }
@@ -90,7 +93,7 @@ public class FlipView extends FrameLayout{
     final float centerX = m_FrontFace.getWidth() / 2.0f;
     final float centerY = m_FrontFace.getHeight() / 2.0f;
     
-    final FlipAnimation rotation = new FlipAnimation(start, end, centerX, centerY);
+    final FlipAnimation rotation = new FlipAnimation(start, end, centerX, centerY, ((m_Direction==DIRECTION_VERTICAL)?false:true));
     rotation.setDuration(m_HalfAnimationDuration);
     rotation.setFillAfter(true);
     
@@ -116,14 +119,14 @@ public class FlipView extends FrameLayout{
       m_FrontFace.setVisibility(View.GONE);
       m_BackFace.setVisibility(View.VISIBLE);
       m_BackFace.requestFocus();
-      rotation = new FlipAnimation(-90, 0, centerX, centerY);
+      rotation = new FlipAnimation(-90, 0, centerX, centerY, ((m_Direction==DIRECTION_VERTICAL)?false:true));
     }
     else {
       m_BackFace.setVisibility(View.GONE);
       m_FrontFace.setVisibility(View.VISIBLE);
       m_FrontFace.requestFocus();
       
-      rotation = new FlipAnimation(90, 0, centerX, centerY);
+      rotation = new FlipAnimation(90, 0, centerX, centerY,((m_Direction==DIRECTION_VERTICAL)?false:true));
     }
     
     rotation.setDuration(m_HalfAnimationDuration);

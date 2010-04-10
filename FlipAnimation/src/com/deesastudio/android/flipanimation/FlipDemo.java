@@ -14,6 +14,7 @@ public class FlipDemo extends Activity {
     
     FlipView fv = new FlipView(this);
     fv.setAnimationDuration(2000);
+    fv.setDirection(FlipView.DIRECTION_VERTICAL);
     ll.addView(fv);
     FlipView fv2 = new FlipView(this);
     fv2.setInterpolator(FlipView.INTERPOLATOR_NONLINEAR);
