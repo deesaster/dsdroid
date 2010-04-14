@@ -1,6 +1,12 @@
+/**
+ * 
+ * @author denis@1337mobile.com
+ *
+ */
 package com.deesastudio.android.flipanimation;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -14,12 +20,18 @@ public class FlipView extends FrameLayout{
   public static final int INTERPOLATOR_NONLINEAR = 2;
   public static final int DIRECTION_HORIZONTAL = 1;
   public static final int DIRECTION_VERTICAL = 2;
+  public static final int PIVOT_CENTER = 1;
+  public static final int PIVOT_LEFT = 2;
+  public static final int PIVOT_RIGHT = 3;
+  public static final int PIVOT_TOP = 2;
+  public static final int PIVOT_BOTTOM = 3;
   
   private boolean m_IsFrontFacing = true;
   private boolean m_IsAnimating = false;
   
   private int m_InterpolatorType = INTERPOLATOR_LINEAR;
   private int m_Direction = DIRECTION_HORIZONTAL;
+  private int m_Pivot = PIVOT_CENTER;
   
   private long m_HalfAnimationDuration = 500;
   
@@ -31,7 +43,21 @@ public class FlipView extends FrameLayout{
     
     setFrontFace (frontFace);
     setBackFace (backFace);
-    //m_BackFace.setVisibility(View.GONE);
+  }
+  
+  public void setPivot(int pvt) {
+    if (m_IsAnimating)
+      return;
+    
+    if (pvt == PIVOT_CENTER || 
+        pvt == PIVOT_LEFT || 
+        pvt == PIVOT_RIGHT ||
+        pvt == PIVOT_TOP ||
+        pvt == PIVOT_BOTTOM) {
+      m_Pivot = pvt;
+    }
+    else
+      m_Pivot = PIVOT_CENTER;
   }
   
   //
@@ -66,10 +92,11 @@ public class FlipView extends FrameLayout{
       this.addView(m_BackFace);
       
       if (m_IsFrontFacing)
-        m_FrontFace.setVisibility(View.GONE);
+        m_BackFace.setVisibility(View.GONE);
     }
   }
   
+  //
   public void setInterpolator(int interpolator) {
     if (interpolator == INTERPOLATOR_NONLINEAR)
       m_InterpolatorType = INTERPOLATOR_NONLINEAR;
@@ -77,11 +104,13 @@ public class FlipView extends FrameLayout{
       m_InterpolatorType = INTERPOLATOR_LINEAR;
   }
   
+  //
   public void setAnimationDuration(long milliseconds) {
     if (milliseconds > 20)
       m_HalfAnimationDuration = (long)milliseconds / 2;
   }
   
+  //
   public void setDirection(int dir) {
     if (m_IsAnimating)
       return;
@@ -92,9 +121,11 @@ public class FlipView extends FrameLayout{
       m_Direction = DIRECTION_HORIZONTAL;
   }
 	
+  //
   public void flip() {
-    if (m_IsAnimating || m_FrontFace == null || m_BackFace == null)
+    if (m_IsAnimating || m_FrontFace == null || m_BackFace == null) {
       return;
+    }
     
     if (m_IsFrontFacing)
       applyRotation(0, 90);
@@ -107,10 +138,15 @@ public class FlipView extends FrameLayout{
   private void applyRotation(float start, float end) {
     m_IsAnimating = true;
 
-    final float centerX = m_FrontFace.getWidth() / 2.0f;
-    final float centerY = m_FrontFace.getHeight() / 2.0f;
+    final float centerX = (m_Pivot == PIVOT_LEFT) ? 
+        0 : ((m_Pivot == PIVOT_CENTER) ? 
+            (m_FrontFace.getWidth() / 2.0f) : m_FrontFace.getWidth()) ;
+    final float centerY = (m_Pivot == PIVOT_LEFT) ? 
+        0 : ((m_Pivot == PIVOT_CENTER) ? 
+            (m_FrontFace.getHeight() / 2.0f) : m_FrontFace.getHeight()) ;
     
-    final FlipAnimation rotation = new FlipAnimation(start, end, centerX, centerY, ((m_Direction==DIRECTION_VERTICAL)?false:true));
+    final FlipAnimation rotation = new FlipAnimation(start, end, centerX, centerY, 
+        ((m_Direction==DIRECTION_VERTICAL)?false:true));
     rotation.setDuration(m_HalfAnimationDuration);
     rotation.setFillAfter(true);
     
@@ -128,9 +164,16 @@ public class FlipView extends FrameLayout{
   }
 	
   private void runSecondAnimation(boolean frontFace) {
+
     FlipAnimation rotation;
-    final float centerX = m_FrontFace.getWidth() / 2.0f;
-    final float centerY = m_FrontFace.getHeight() / 2.0f;
+    //final float centerX = m_FrontFace.getWidth() / 2.0f;
+    //final float centerY = m_FrontFace.getHeight() / 2.0f;
+    final float centerX = (m_Pivot == PIVOT_LEFT) ? 
+        0 : ((m_Pivot == PIVOT_CENTER) ? 
+            (m_FrontFace.getWidth() / 2.0f) : m_FrontFace.getWidth()) ;
+    final float centerY = (m_Pivot == PIVOT_LEFT) ? 
+        0 : ((m_Pivot == PIVOT_CENTER) ? 
+            (m_FrontFace.getHeight() / 2.0f) : m_FrontFace.getHeight()) ;
     
     if (frontFace) {
       m_FrontFace.setVisibility(View.GONE);

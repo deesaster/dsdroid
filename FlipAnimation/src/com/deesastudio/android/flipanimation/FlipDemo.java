@@ -2,6 +2,7 @@ package com.deesastudio.android.flipanimation;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,40 +27,37 @@ public class FlipDemo extends Activity {
     RelativeLayout bf2 = (RelativeLayout) View.inflate(this, R.layout.back_face, null);
     
     
-    final FlipView fv = new FlipView(this, ff, bf);
-    fv.setAnimationDuration(2000);
+    final FlipView fv = new FlipView(this, bf, ff);
+    fv.setAnimationDuration(800);
     fv.setDirection(FlipView.DIRECTION_VERTICAL);
+    fv.setPivot (FlipView.PIVOT_BOTTOM);
     ll.addView(fv);
-    
     final FlipView fv2 = new FlipView(this, ff2, bf2);
     fv2.setInterpolator(FlipView.INTERPOLATOR_NONLINEAR);
-    fv2.setAnimationDuration(500);
+    fv2.setPivot(FlipView.PIVOT_LEFT);
+    fv2.setAnimationDuration(300);
     ll.addView(fv2);
     
     ff.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v) {
-        // TODO Auto-generated method stub
         fv.flip();
       }
     });
     
     bf.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v) {
-        // TODO Auto-generated method stub
         fv.flip();
       }
     });
     
     ff2.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v) {
-        // TODO Auto-generated method stub
         fv2.flip();
       }
     });
     
     bf2.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v) {
-        // TODO Auto-generated method stub
         fv2.flip();
       }
     });

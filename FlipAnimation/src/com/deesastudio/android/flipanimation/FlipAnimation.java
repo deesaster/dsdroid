@@ -2,6 +2,7 @@ package com.deesastudio.android.flipanimation;
 
 import android.graphics.Camera;
 import android.graphics.Matrix;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
@@ -37,7 +38,6 @@ public class FlipAnimation extends Animation{
     float degrees = m_FromDegrees + ((m_ToDegrees - m_FromDegrees) * interpolatedTime);
     final Camera camera = m_Camera;
     final Matrix matrix = t.getMatrix();
-    
     camera.save();
     
     if (m_YAxis)
